@@ -3,52 +3,40 @@ import {PrismaClient} from "@prisma/client";
 
 const prisma = new PrismaClient()
 
-const firstNote = await prisma.note.findFirst()
-const user = await prisma.user.findFirst()
+await prisma.user.deleteMany()
 
-if (!firstNote) {
-    throw new Error("You need to have a note in the database first")
-}
-
-if (!user) {
-    throw new Error("User doesnt exists")
-}
-
-await prisma.note.update({
-    where: { id: firstNote.id },
+const kody = await prisma.user.create({
     data: {
-        images: {
-            create: [
-                {
-                    altText: 'an adorable koala cartoon illustration',
-                    contentType: 'image/png',
-                    blob: await fs.promises.readFile(
-                        './tests/fixtures/images/kody-notes/cute-koala.png',
-                    ),
-                },
-                {
-                    altText: 'a cartoon illustration of a koala in a tree eating',
-                    contentType: 'image/png',
-                    blob: await fs.promises.readFile(
-                        './tests/fixtures/images/kody-notes/koala-eating.png',
-                    ),
-                },
-            ]
-        }
+        email: 'arief@master.com',
+        username: 'alkarief',
+        name: 'kodulus'
     }
 })
 
-await prisma.user.update({
-    where: { id: user.id },
+await prisma.note.create({
     data: {
-        image: {
-            create: {
-                altText: 'an adorable koala cartoon illustration',
-                contentType: 'image/png',
-                blob: await fs.promises.readFile(
-                    './tests/fixtures/images/kody-notes/cute-koala.png',
-                ),
-            }
-        }
-    }
+            id: 'd27a197e',
+            title: 'Basic Koala Facts',
+            content:
+                'Koalas are found in the eucalyptus forests of eastern Australia. They have grey fur with a cream-coloured chest, and strong, clawed feet, perfect for living in the branches of trees!',
+            ownerId: kody.id,
+            images: {
+                create: [
+                    {
+                        altText: 'an adorable koala cartoon illustration',
+                        contentType: 'image/png',
+                        blob: await fs.promises.readFile(
+                            './tests/fixtures/images/kody-notes/cute-koala.png',
+                        ),
+                    },
+                    {
+                        altText: 'a cartoon illustration of a koala in a tree eating',
+                        contentType: 'image/png',
+                        blob: await fs.promises.readFile(
+                            './tests/fixtures/images/kody-notes/koala-eating.png',
+                        ),
+                    },
+                ],
+            },
+        },
 })
